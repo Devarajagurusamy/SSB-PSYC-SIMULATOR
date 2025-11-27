@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Free SSB TAT & WAT Mock Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  >
+
+  <style>
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background: #eef2f7;
+      color: #111827;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    #appRoot {
+      flex: 1 0 auto;
+    }
+
+    .screen {
+      display: none;
+    }
+    .screen.active {
+      display: block;
+    }
+    .timer-display {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    .full-screen-card {
+      min-height: calc(100vh - 160px);
+      display: flex;
+      flex-direction: column;
+    }
+    .presentation-area {
+      flex: 1;
+      background: #ffffff;
+      border-radius: 1rem;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e5e7eb;
+      min-height: 0;
+    }
+    .presentation-area img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .presentation-text {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      text-align: center;
+      color: #111827;
+      font-weight: 600;
+    }
+    .responses-box {
+      max-height: 260px;
+      overflow-y: auto;
+      background-color: #ffffff;
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      border: 1px solid #e5e7eb;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+      color: #111827;
+    }
+
+    /* Cards – global */
+    .card {
+      border: none !important;
+      border-radius: 16px !important;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06) !important;
+    }
+
+    /* Professional header bar */
+    .app-header-shell {
+      margin-bottom: 1.75rem;
+    }
+    .app-header-bar {
+      background: #f9fafb;
+      border-radius: 18px;
+      padding: 16px 20px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    .app-header-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 20%, #60a5fa, #1d4ed8);
+      color: #eff6ff;
+      font-size: 1.3rem;
+    }
+
+    /* Buttons */
+    .btn {
+      font-size: 15px;
+      padding: 10px 18px;
+      border-radius: 10px;
+    }
+
+    /* Mode cards on Home page */
+    .mode-card {
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      cursor: pointer;
+      background: #ffffff;
+    }
+    .mode-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.10) !important;
+    }
+
+    /* Big icon circles for cards */
+    .icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+    }
+    .icon-tat {
+      background: #e0ecff;
+      color: #1d4ed8;
+    }
+    .icon-wat {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .icon-full {
+      background: #ffedd5;
+      color: #c2410c;
+    }
+
+    /* Footer bar (sticky bottom) */
+    footer {
+      background: #0b1120;
+      color: #e5e7eb;
+      padding: 10px 0;
+      margin-top: auto;
+      box-shadow: 0 -4px 14px rgba(15, 23, 42, 0.4);
+      flex-shrink: 0;
+    }
+
+    /* IMMERSIVE TEST MODE: hide all chrome */
+    body.test-running header,
+    body.test-running .test-chrome,
+    body.test-running footer {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="appRoot" class="container-fluid py-3 px-3 px-md-5">
+
+    <!-- HEADER -->
+    <header class="app-header-shell">
+      <div class="app-header-bar d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div class="d-flex align-items-center gap-3 mb-2 mb-md-0">
+          <div class="app-header-icon">
+            <i class="bi bi-clipboard2-check"></i>
+          </div>
+          <div>
+            <h1 class="h4 mb-1">Free SSB TAT &amp; WAT Mock Test</h1>
+            
+          </div>
+        </div>
+        <div class="text-md-end small">
+          <i class="bi bi-shield-check me-1"></i>
+          Stay calm. Stay confident. All the best!
+        </div>
+        <!-- <div class="text-md-end small">
+          <span class="badge bg-primary-subtle text-primary me-1">
+            <i class="bi bi-image me-1"></i> TAT
+          </span>
+          <span class="badge bg-success-subtle text-success me-1">
+            <i class="bi bi-fonts me-1"></i> WAT
+          </span>
+          <span class="badge bg-secondary-subtle text-secondary">
+            <i class="bi bi-clock-history me-1"></i> Real-time practice
+          </span>
+        </div> -->
+      </div>
+    </header>
+
+    <!-- SCREEN: HOME -->
+    <section id="screen-home" class="screen active">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          
+          
+<h2 class="h5 mb-3 text-center text-md-start">Choose Practice Mode</h2>
+          <div class="row g-3 mt-2">
+            <!-- TAT CARD -->
+            <div class="col-md-4">
+              <div class="card h-100 mode-card" id="cardModeTat">
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="icon-circle icon-tat">
+                      <i class="bi bi-camera"></i>
+                    </div>
+                    <div>
+                      <h5 class="card-title mb-1 fw-semibold">Only TAT Test</h5>
+                      <span class="badge bg-primary-subtle text-primary small">
+                        <i class="bi bi-bolt me-1"></i>Slides only
+                      </span>
+                    </div>
+                  </div>
+                  <p class="card-text text-muted small flex-grow-1 mb-3">
+                    11 images you upload + 1 blank slide added automatically.
+                    30 sec viewing, then 4 min writing for every slide.
+                  </p>
+                  <div class="d-flex flex-wrap gap-2 small text-muted mb-3">
+                    <span><i class="bi bi-clock me-1"></i>30s view</span>
+                    <span><i class="bi bi-pen me-1"></i>4 min write</span>
+                    <span><i class="bi bi-layers me-1"></i>12 slides</span>
+                  </div>
+                  <button class="btn btn-primary mt-auto w-100" id="btnModeTat">
+                    Start TAT Only
+                    <i class="bi bi-arrow-right ms-1"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- WAT CARD -->
+            <div class="col-md-4">
+              <div class="card h-100 mode-card" id="cardModeWat">
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="icon-circle icon-wat">
+                      <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div>
+                      <h5 class="card-title mb-1 fw-semibold">Only WAT Test</h5>
+                      <span class="badge bg-success-subtle text-success small">
+                        <i class="bi bi-list-ol me-1"></i>Words only
+                      </span>
+                    </div>
+                  </div>
+                  <p class="card-text text-muted small flex-grow-1 mb-3">
+                    Type/paste words (one per line) in setup.
+                    Each word shows big on screen for 15 seconds.
+                  </p>
+                  <div class="d-flex flex-wrap gap-2 small text-muted mb-3">
+                    <span><i class="bi bi-clock me-1"></i>15s / word</span>
+                    <span><i class="bi bi-journal-text me-1"></i>Notebook answers</span>
+                    <span><i class="bi bi-speedometer2 me-1"></i>Speed practice</span>
+                  </div>
+                  <button class="btn btn-success mt-auto w-100" id="btnModeWat">
+                    Start WAT Only
+                    <i class="bi bi-arrow-right ms-1"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- FULL TEST CARD -->
+            <div class="col-md-4">
+              <div class="card h-100 mode-card" id="cardModeFull">
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="icon-circle icon-full">
+                      <i class="bi bi-card-checklist"></i>
+                    </div>
+                    <div>
+                      <h5 class="card-title mb-1 fw-semibold">Overall Psychology Test</h5>
+                      <span class="badge bg-warning-subtle text-dark small">
+                        <i class="bi bi-infinity me-1"></i>Full flow
+                      </span>
+                    </div>
+                  </div>
+                  <p class="card-text text-muted small flex-grow-1 mb-3">
+                    TAT (11 + 1 blank) → 1 min rest → WAT.
+                    Continuous flow. No skip button — cancel mid-test with Esc.
+                  </p>
+                  <div class="d-flex flex-wrap gap-2 small text-muted mb-3">
+                    <span><i class="bi bi-diagram-3 me-1"></i>Exam pattern</span>
+                    <span><i class="bi bi-stopwatch me-1"></i>Auto timers</span>
+                    <span><i class="bi bi-shield-lock me-1"></i>Distraction-free</span>
+                  </div>
+                  <button class="btn btn-dark mt-auto w-100" id="btnModeFull">
+                    Start Full Test
+                    <i class="bi bi-arrow-right ms-1"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+<p class="text-muted text-center">
+            This tool only shows images &amp; words like a slideshow.
+            You will write all your stories and sentences on your physical notebook.
+          </p>
+          <p class="text-muted small text-center">
+            Once the test starts, <strong>only slides/words</strong> will be visible in full screen.
+            To cancel in the middle, press <strong>Esc</strong> to exit fullscreen.
+          </p>
+      </div>
+    </section>
+
+    <!-- SCREEN: SETUP & INSTRUCTIONS -->
+    <section id="screen-setup" class="screen">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h5 mb-0" id="setup-title">Setup &amp; Instructions</h2>
+            <button class="btn btn-sm btn-outline-secondary" id="btnBackToHome">
+              <i class="bi bi-arrow-left me-1"></i> Back
+            </button>
+          </div>
+
+          <p id="setup-mode-label" class="text-primary small fw-semibold mb-2"></p>
+
+          <!-- Instructions -->
+          <div class="alert alert-info mb-3" id="instructions-box"></div>
+
+          <!-- Config form -->
+          <div class="row g-4">
+            <!-- TAT SETUP SECTION -->
+            <div class="col-md-6" id="tatSetup">
+              <h6 class="mb-2">TAT Images</h6>
+              <p class="text-muted small mb-2">
+                Upload your TAT images in the order they should appear.
+                Recommended: <strong>11 images</strong>. This tool will automatically add a
+                <strong>12th blank slide</strong> at the end.
+              </p>
+              <div class="mb-2">
+                <label for="tatImagesInput" class="form-label">Upload TAT Images</label>
+                <input type="file" class="form-control" id="tatImagesInput" accept="image/*" multiple>
+              </div>
+              <p class="text-muted small mb-0">
+                In the test: image fills the screen for <strong>30 seconds</strong>, then hides,
+                and you get <strong>4 minutes</strong> to write the story in your notebook.
+              </p>
+            </div>
+
+            <!-- WAT SETUP SECTION -->
+            <div class="col-md-6" id="watSetup">
+              <h6 class="mb-2">WAT Words (Textarea)</h6>
+              <p class="text-muted small mb-2">
+                Enter your WAT words, <strong>one per line</strong>.
+                Recommended: around <strong>60 words</strong>.
+              </p>
+              <div class="mb-2">
+                <label for="watWordsInput" class="form-label">Words List</label>
+                <textarea class="form-control" id="watWordsInput" rows="8"
+                  placeholder="Example&#10;SUCCESS&#10;FAILURE&#10;COURAGE&#10;DISCIPLINE&#10;..."></textarea>
+              </div>
+              <p class="text-muted small mb-0">
+                In the test: each word appears big on screen for <strong>15 seconds</strong>.
+                You write the sentence only in your notebook.
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-3 d-flex flex-column flex-sm-row align-items-sm-center gap-2">
+            <button class="btn btn-primary" id="btnStartTest">
+              <i class="bi bi-arrows-fullscreen me-1"></i> Start Test (Fullscreen)
+            </button>
+            <span id="setupStatus" class="text-danger small"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: TAT -->
+    <section id="screen-tat" class="screen">
+      <div class="card shadow-sm full-screen-card">
+        <div class="card-body d-flex flex-column">
+          <!-- Top info (hidden during test) -->
+          <div class="d-flex justify-content-between align-items-center mb-2 test-chrome">
+            <div>
+              <h2 class="h5 mb-0">TAT Test</h2>
+              <small class="text-muted">
+                30 sec viewing → 4 min writing. No skipping.
+              </small>
+            </div>
+            <div class="text-end">
+              <div class="timer-display" id="tatTimerDisplay">00:00</div>
+              <div class="text-muted small" id="tatPhaseLabel">Viewing image...</div>
+              <div class="text-muted small" id="tatProgressText"></div>
+            </div>
+          </div>
+
+          <div class="presentation-area mt-2">
+            <img id="tatImageEl" alt="TAT Slide" class="d-none">
+            <div id="tatBlankText" class="presentation-text d-none">
+              Blank Slide<br><span style="font-size: 0.6em;">Imagine any scene and write the story in your notebook.</span>
+            </div>
+            <div id="tatPhaseText" class="presentation-text d-none"></div>
+          </div>
+
+          <div class="mt-2 text-muted small test-chrome" id="tatFileName"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: REST AFTER TAT -->
+    <section id="screen-rest" class="screen">
+      <div class="card shadow-sm full-screen-card">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center">
+          <h2 class="h5 mb-2 test-chrome">TAT Completed</h2>
+          <p class="text-muted mb-3 test-chrome">
+            You now have a <strong>1 minute rest break</strong> before WAT starts.
+          </p>
+          <div class="presentation-text mb-2">
+            Rest Break
+          </div>
+          <div class="timer-display mb-2 test-chrome" id="restTimerDisplay">01:00</div>
+          <p class="text-muted small mb-0 test-chrome">
+            WAT will start automatically at 00:00.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: WAT -->
+    <section id="screen-wat" class="screen">
+      <div class="card shadow-sm full-screen-card">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-2 test-chrome">
+            <div>
+              <h2 class="h5 mb-0">WAT Test</h2>
+              <small class="text-muted">
+                Each word stays for 15 seconds.
+              </small>
+            </div>
+            <div class="text-end">
+              <div class="timer-display" id="watTimerDisplay">00:00</div>
+              <div class="text-muted small" id="watProgressText"></div>
+            </div>
+          </div>
+
+          <div class="presentation-area mt-2">
+            <div class="presentation-text" id="watWordDisplay">WORD</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: SUMMARY -->
+    <section id="screen-summary" class="screen">
+      <div class="card shadow-sm">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center" style="min-height:240px;">
+          <div id="summaryBigText" class="presentation-text text-center" style="font-size:3.8rem; line-height:1; font-weight:700;">Test Ended</div>
+          <div class="mt-4">
+            <button class="btn btn-outline-secondary" id="btnRestart">
+              <i class="bi bi-house-door me-1"></i>  Press Esc and Reload to Return Home
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container-sm text-center small">
+      <div>
+        &copy; 2025 FREE SSB TAT &amp; WAT Simulator. All rights reserved.
+      </div>
+      
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // ===========================
+    // Constants
+    // ===========================
+    const TAT_VIEW_SECONDS = 30;
+    const TAT_WRITE_SECONDS = 240;
+    const WAT_SECONDS = 15;
+    const REST_SECONDS = 60;
+
+    // ===========================
+    // Utility Modules
+    // ===========================
+    const Sound = (function () {
+      let audioCtx = null;
+      function ensureContext() {
+        if (!audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) audioCtx = new AudioContext();
+        }
+      }
+      function beep() {
+        ensureContext();
+        if (!audioCtx) return;
+        const duration = 0.12;
+        const freq = 1200;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      }
+      return { beep };
+    })();
+
+    const TimeUtil = {
+      format(seconds) {
+        const s = Math.max(0, Math.floor(seconds));
+        const m = Math.floor(s / 60);
+        const r = s % 60;
+        return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+      }
+    };
+
+    const UI = (function () {
+      const screens = {
+        home: document.getElementById("screen-home"),
+        setup: document.getElementById("screen-setup"),
+        tat: document.getElementById("screen-tat"),
+        rest: document.getElementById("screen-rest"),
+        wat: document.getElementById("screen-wat"),
+        summary: document.getElementById("screen-summary")
+      };
+
+      function setScreen(name, testRunning = false) {
+        Object.values(screens).forEach(el => el.classList.remove("active"));
+        if (screens[name]) screens[name].classList.add("active");
+        if (testRunning) {
+          document.body.classList.add("test-running");
+        } else {
+          document.body.classList.remove("test-running");
+        }
+      }
+
+      return { setScreen };
+    })();
+
+    // Fullscreen helper
+    const Fullscreen = (function () {
+      const root = document.documentElement;
+      function enter() {
+        if (root.requestFullscreen) root.requestFullscreen();
+        else if (root.webkitRequestFullscreen) root.webkitRequestFullscreen();
+        else if (root.msRequestFullscreen) root.msRequestFullscreen();
+      }
+      return { enter };
+    })();
+
+    // ===========================
+    // Application State
+    // ===========================
+    const App = {
+      mode: "full", // "tat" | "wat" | "full"
+      tatItems: [], // {type:"image"|"blank", fileName?, url?}
+      watWords: [],
+      currentTatIndex: 0,
+      currentWatIndex: 0,
+      tatPhase: "view", // "view" | "write"
+      tatTimerId: null,
+      tatViewLeft: 0,
+      tatWriteLeft: 0,
+      watTimerId: null,
+      watTimeLeft: 0,
+      restTimerId: null,
+      restTimeLeft: REST_SECONDS,
+      running: false
+    };
+
+    // ===========================
+    // DOM Elements
+    // ===========================
+    const btnModeTat = document.getElementById("btnModeTat");
+    const btnModeWat = document.getElementById("btnModeWat");
+    const btnModeFull = document.getElementById("btnModeFull");
+    const btnBackToHome = document.getElementById("btnBackToHome");
+    const btnStartTest = document.getElementById("btnStartTest");
+
+    const setupModeLabel = document.getElementById("setup-mode-label");
+    const instructionsBox = document.getElementById("instructions-box");
+    const tatImagesInput = document.getElementById("tatImagesInput");
+    const watWordsInput = document.getElementById("watWordsInput");
+    const setupStatus = document.getElementById("setupStatus");
+
+    const tatSetup = document.getElementById("tatSetup");
+    const watSetup = document.getElementById("watSetup");
+
+    // TAT DOM
+    const tatImageEl = document.getElementById("tatImageEl");
+    const tatBlankText = document.getElementById("tatBlankText");
+    const tatPhaseText = document.getElementById("tatPhaseText");
+    const tatFileNameEl = document.getElementById("tatFileName");
+    const tatProgressText = document.getElementById("tatProgressText");
+    const tatTimerDisplay = document.getElementById("tatTimerDisplay");
+    const tatPhaseLabel = document.getElementById("tatPhaseLabel");
+
+    // REST DOM
+    const restTimerDisplay = document.getElementById("restTimerDisplay");
+
+    // WAT DOM
+    const watTimerDisplay = document.getElementById("watTimerDisplay");
+    const watWordDisplay = document.getElementById("watWordDisplay");
+    const watProgressText = document.getElementById("watProgressText");
+
+    // SUMMARY DOM
+    const tatSummaryBox = document.getElementById("tatSummaryBox");
+    const watSummaryBox = document.getElementById("watSummaryBox");
+    const tatSummaryCount = document.getElementById("tatSummaryCount");
+    const watSummaryCount = document.getElementById("watSummaryCount");
+    const btnDownload = document.getElementById("btnDownload");
+    const btnRestart = document.getElementById("btnRestart");
+
+    // ===========================
+    // Mode Selection & Setup
+    // ===========================
+    function goToSetup(mode) {
+      App.mode = mode;
+      setupStatus.textContent = "";
+
+      let modeLabel = "";
+      let instructionsHtml = "";
+
+      if (mode === "tat") {
+        tatSetup.style.display = "";
+        watSetup.style.display = "none";
+        modeLabel = "Mode: Only TAT Test";
+        instructionsHtml = `
+          <strong>TAT Only Practice</strong><br>
+          • Upload your TAT images in order (ideally 11).<br>
+          • System adds a <strong>12th blank slide</strong> automatically.<br>
+          • For each slide: <strong>30 sec viewing</strong> (image visible), then image hides and you get <strong>4 min</strong> to write in your notebook.<br>
+          • Once started, only slides are visible. Press <strong>Esc</strong> to cancel.
+        `;
+      } else if (mode === "wat") {
+        tatSetup.style.display = "none";
+        watSetup.style.display = "";
+        modeLabel = "Mode: Only WAT Test";
+        instructionsHtml = `
+          <strong>WAT Only Practice</strong><br>
+          • Enter around <strong>60 words</strong>, one per line.<br>
+          • Each word appears big on the screen for <strong>15 seconds</strong>.<br>
+          • You write sentences only in your notebook.<br>
+          • Once started, only the word is visible. Press <strong>Esc</strong> to cancel.
+        `;
+      } else {
+        tatSetup.style.display = "";
+        watSetup.style.display = "";
+        modeLabel = "Mode: Overall Psychology Test (TAT + WAT)";
+        instructionsHtml = `
+          <strong>Full Psychology Flow</strong><br>
+          • TAT: 11 images you upload + <strong>1 blank slide</strong> auto-added.<br>
+          • Each slide: <strong>30 sec viewing</strong> → image hides → <strong>4 min writing</strong> in notebook.<br>
+          • Then <strong>1 minute rest</strong> (screen shows only “Rest Break”).<br>
+          • Then WAT: each word from your list for <strong>15 seconds</strong> on screen.<br>
+          • No manual skipping. Only way to exit mid-test is pressing <strong>Esc</strong>.
+        `;
+      }
+
+      setupModeLabel.textContent = modeLabel;
+      instructionsBox.innerHTML = instructionsHtml;
+
+      UI.setScreen("setup", false);
+    }
+
+    btnModeTat.addEventListener("click", () => goToSetup("tat"));
+    btnModeWat.addEventListener("click", () => goToSetup("wat"));
+    btnModeFull.addEventListener("click", () => goToSetup("full"));
+
+    // Make entire home cards clickable
+    document.getElementById("cardModeTat").addEventListener("click", () => btnModeTat.click());
+    document.getElementById("cardModeWat").addEventListener("click", () => btnModeWat.click());
+    document.getElementById("cardModeFull").addEventListener("click", () => btnModeFull.click());
+
+    btnBackToHome.addEventListener("click", () => {
+      UI.setScreen("home", false);
+      App.running = false;
+    });
+
+    // Cancel entire test (used on ESC/fullscreen exit and restart)
+    function cancelTest() {
+      if (App.tatTimerId) clearInterval(App.tatTimerId);
+      if (App.watTimerId) clearInterval(App.watTimerId);
+      if (App.restTimerId) clearInterval(App.restTimerId);
+      App.tatTimerId = null;
+      App.watTimerId = null;
+      App.restTimerId = null;
+
+      App.tatItems = [];
+      App.watWords = [];
+      App.currentTatIndex = 0;
+      App.currentWatIndex = 0;
+      App.running = false;
+
+      UI.setScreen("home", false);
+    }
+
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement && App.running) {
+        cancelTest();
+      }
+    });
+
+    // Start test from setup
+    btnStartTest.addEventListener("click", () => {
+      setupStatus.textContent = "";
+
+      const tatFiles = Array.from(tatImagesInput.files || []);
+      const words = (watWordsInput.value || "")
+        .split(/\r?\n/)
+        .map(w => w.trim())
+        .filter(w => w.length > 0);
+
+      if (App.mode === "tat" || App.mode === "full") {
+        if (tatFiles.length === 0) {
+          setupStatus.textContent = "Please upload at least one TAT image.";
+          return;
+        }
+      }
+      if (App.mode === "wat" || App.mode === "full") {
+        if (words.length === 0) {
+          setupStatus.textContent = "Please enter at least one WAT word.";
+          return;
+        }
+      }
+
+      App.tatItems = tatFiles.map(f => ({
+        type: "image",
+        fileName: f.name,
+        url: URL.createObjectURL(f)
+      }));
+      if (App.mode === "tat" || App.mode === "full") {
+        App.tatItems.push({ type: "blank", fileName: "Blank Slide" });
+      }
+
+      App.watWords = words;
+
+      App.currentTatIndex = 0;
+      App.currentWatIndex = 0;
+
+      Fullscreen.enter();
+      App.running = true;
+
+      if (App.mode === "wat") {
+        startWAT();
+      } else {
+        startTAT();
+      }
+    });
+
+    // ===========================
+    // TAT MODULE
+    // ===========================
+    function startTAT() {
+      if (!App.tatItems.length) {
+        if (App.mode === "full") startRest();
+        else showSummary();
+        return;
+      }
+      UI.setScreen("tat", true);
+      App.tatPhase = "view";
+      loadTatSlideView();
+    }
+
+    function loadTatSlideView() {
+      if (App.tatTimerId) {
+        clearInterval(App.tatTimerId);
+        App.tatTimerId = null;
+      }
+
+      if (App.currentTatIndex >= App.tatItems.length) {
+        if (App.mode === "full") startRest();
+        else showSummary();
+        return;
+      }
+
+      const item = App.tatItems[App.currentTatIndex];
+      const total = App.tatItems.length;
+      const indexLabel = App.currentTatIndex + 1;
+
+      App.tatPhase = "view";
+      App.tatViewLeft = TAT_VIEW_SECONDS;
+
+      tatProgressText.textContent = `Slide ${indexLabel} of ${total}`;
+
+      tatPhaseText.classList.add("d-none");
+      if (item.type === "image") {
+        tatImageEl.src = item.url;
+        tatImageEl.classList.remove("d-none");
+        tatBlankText.classList.add("d-none");
+        tatFileNameEl.textContent = item.fileName;
+      } else {
+        tatImageEl.classList.add("d-none");
+        tatBlankText.classList.remove("d-none");
+        tatFileNameEl.textContent = "Blank Slide (Imagine any scene)";
+      }
+
+      tatPhaseLabel.textContent = "Viewing image (30 sec)";
+      tatTimerDisplay.textContent = TimeUtil.format(App.tatViewLeft);
+
+      Sound.beep();
+
+      App.tatTimerId = setInterval(() => {
+        App.tatViewLeft -= 1;
+        tatTimerDisplay.textContent = TimeUtil.format(App.tatViewLeft);
+        if (App.tatViewLeft <= 0) {
+          clearInterval(App.tatTimerId);
+          App.tatTimerId = null;
+          startTatWritingPhase();
+        }
+      }, 1000);
+    }
+
+    function startTatWritingPhase() {
+      App.tatPhase = "write";
+      App.tatWriteLeft = TAT_WRITE_SECONDS;
+
+      tatImageEl.classList.add("d-none");
+      tatBlankText.classList.add("d-none");
+      tatPhaseText.classList.remove("d-none");
+      tatPhaseText.textContent = "Image hidden. Write the story in your notebook.";
+
+      tatPhaseLabel.textContent = "Writing phase (4 min)";
+      tatTimerDisplay.textContent = TimeUtil.format(App.tatWriteLeft);
+
+      Sound.beep();
+
+      App.tatTimerId = setInterval(() => {
+        App.tatWriteLeft -= 1;
+        tatTimerDisplay.textContent = TimeUtil.format(App.tatWriteLeft);
+        if (App.tatWriteLeft <= 0) {
+          clearInterval(App.tatTimerId);
+          App.tatTimerId = null;
+          App.currentTatIndex += 1;
+          App.tatPhase = "view";
+          loadTatSlideView();
+        }
+      }, 1000);
+    }
+
+    // ===========================
+    // REST MODULE
+    // ===========================
+    function startRest() {
+      if (App.restTimerId) {
+        clearInterval(App.restTimerId);
+        App.restTimerId = null;
+      }
+      App.restTimeLeft = REST_SECONDS;
+      restTimerDisplay.textContent = TimeUtil.format(App.restTimeLeft);
+      UI.setScreen("rest", true);
+
+      Sound.beep();
+
+      App.restTimerId = setInterval(() => {
+        App.restTimeLeft -= 1;
+        restTimerDisplay.textContent = TimeUtil.format(App.restTimeLeft);
+        if (App.restTimeLeft <= 0) {
+          clearInterval(App.restTimerId);
+          App.restTimerId = null;
+          Sound.beep();
+          startWAT();
+        }
+      }, 1000);
+    }
+
+    // ===========================
+    // WAT MODULE
+    // ===========================
+    function startWAT() {
+      if (!App.watWords.length) {
+        showSummary();
+        return;
+      }
+      UI.setScreen("wat", true);
+      loadWatWord();
+    }
+
+    function loadWatWord() {
+      if (App.watTimerId) {
+        clearInterval(App.watTimerId);
+        App.watTimerId = null;
+      }
+
+      if (App.currentWatIndex >= App.watWords.length) {
+        showSummary();
+        return;
+      }
+
+      const word = App.watWords[App.currentWatIndex];
+      const total = App.watWords.length;
+      const indexLabel = App.currentWatIndex + 1;
+
+      App.watTimeLeft = WAT_SECONDS;
+      watWordDisplay.textContent = word;
+      watProgressText.textContent = `Word ${indexLabel} of ${total}`;
+      watTimerDisplay.textContent = TimeUtil.format(App.watTimeLeft);
+
+      Sound.beep();
+
+      App.watTimerId = setInterval(() => {
+        App.watTimeLeft -= 1;
+        watTimerDisplay.textContent = TimeUtil.format(App.watTimeLeft);
+        if (App.watTimeLeft <= 0) {
+          clearInterval(App.watTimerId);
+          App.watTimerId = null;
+          App.currentWatIndex += 1;
+          loadWatWord();
+        }
+      }, 1000);
+    }
+
+    // ===========================
+    // SUMMARY & DOWNLOAD
+    // ===========================
+    function showSummary() {
+      if (App.tatTimerId) clearInterval(App.tatTimerId);
+      if (App.watTimerId) clearInterval(App.watTimerId);
+      if (App.restTimerId) clearInterval(App.restTimerId);
+
+      App.running = false;
+      UI.setScreen("summary", false);
+
+      // Show a single big message on the summary screen
+      const big = document.getElementById('summaryBigText');
+      if (big) big.textContent = 'Test Ended';
+    }
+
+    function buildDownloadText() {
+      let out = "";
+      out += "SSB TAT & WAT PRESENTATION SUMMARY\n";
+      out += "==================================\n\n";
+
+      out += "TAT SLIDES\n----------\n";
+      if (App.tatItems.length) {
+        App.tatItems.forEach((item, idx) => {
+          const label =
+            item.type === "image"
+              ? `Slide ${idx + 1}: Image (${item.fileName})`
+              : `Slide ${idx + 1}: Blank Slide`;
+          out += label + ` – 30 sec view + 4 min write\n`;
+        });
+      } else {
+        out += "No TAT slides used.\n";
+      }
+
+      out += "\nWAT WORDS\n---------\n";
+      if (App.watWords.length) {
+        App.watWords.forEach((w, idx) => {
+          out += `Word ${idx + 1}: ${w} – 15 sec\n`;
+        });
+      } else {
+        out += "No WAT words used.\n";
+      }
+
+      return out;
+    }
+
+    btnDownload.addEventListener("click", () => {
+      const text = buildDownloadText();
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const stamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 19);
+      a.href = url;
+      a.download = `ssb-tat-wat-summary-${stamp}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    btnRestart.addEventListener("click", () => {
+      // Simply reload the page immediately to return to the home screen.
+      try { location.reload(); } catch (e) { /* ignore */ }
+    });
+  </script>
+</body>
+</html>
